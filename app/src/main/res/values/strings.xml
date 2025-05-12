@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Personal Expense Tracker</string>
+
+    <!-- Login Activity -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="no_account">Don\'t have an account? Register</string>
+    <string name="have_account">Already have an account? Login</string>
+
+    <!-- Register Activity -->
+    <string name="username">Username</string>
+    <string name="confirm_password">Confirm Password</string>
+
+    <!-- Add Expense -->
+    <string name="title">Title</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="location">Location</string>
+    <string name="get_location">Get Location</string>
+    <string name="save_expense">Save Expense</string>
+
+    <!-- Settings -->
+    <string name="profile">Profile</string>
+    <string name="appearance">Appearance</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="logout">Logout</string>
+
+    <!-- Categories -->
+    <string-array name="expense_categories">
+        <item>Food</item>
+        <item>Transportation</item>
+        <item>Housing</item>
+        <item>Utilities</item>
+        <item>Healthcare</item>
+        <item>Entertainment</item>
+        <item>Education</item>
+        <item>Personal</item>
+        <item>Other</item>
+    </string-array>
+</resources>
