@@ -1,264 +1,172 @@
-Personal Expense Tracker 📱💰
+Personal Expense Tracker 💰
+An Android app to track daily expenses with local PHP/MySQL backend.
 
+🚀 Quick Setup
+1. Install Requirements
+Android Studio (latest version)
 
-A comprehensive Android application for managing personal finances built with Java and Android Studio, featuring a PHP/MySQL backend using XAMPP.
-
-✨ Features
-📋 Core Features
-User Authentication - Secure registration and login system
-
-Expense Management - Add, view, edit, and delete expenses
-
-Expense Categorization - Organize expenses by categories (Food, Transportation, etc.)
-
-Location Tracking - Tag expenses with location using GPS
-
-Analytics Dashboard - Visual spending insights with charts and graphs
-
-Dark/Light Mode - Customizable theme for user preference
-
-🔧 Technical Features
-Local Database - MySQL database using XAMPP and phpMyAdmin
-
-RESTful API - PHP backend with JSON API endpoints
-
-Android Native - Built with Java and Android SDK
-
-Material Design - Modern UI following Material Design guidelines
-
-Room Database - Local caching for offline access
-
-🏗️ Architecture
-text
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Android App   │────▶│   PHP API       │────▶│   MySQL DB      │
-│   (Java)        │     │   (XAMPP)       │     │   (phpMyAdmin)  │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-
-🚀 Getting Started
-Prerequisites
-Android Studio (Latest Version)
+XAMPP (for local server)
 
 Java JDK 11+
 
-XAMPP (Apache + MySQL)
-
-Android SDK (API 23+)
-
-Android Emulator or Physical Device
-
-Installation
-1. Clone the Repository
-bash
-git clone https://github.com/yourusername/personal-expense-tracker.git
-cd personal-expense-tracker
 2. Database Setup
-Install and start XAMPP
+Start XAMPP (Apache + MySQL)
 
-Open phpMyAdmin (http://localhost/phpmyadmin)
+Open phpMyAdmin: http://localhost/phpmyadmin
 
-Create a new database: expense_tracker
+Create database: expense_tracker
 
-Import the SQL file from database/schema.sql
+Run these SQL commands:
 
-Update database credentials in php_api/config.php
-
-3. PHP API Setup
-Copy the php_api folder to C:\xampp\htdocs\
-
-Configure database connection in php_api/config.php
-
-4. Android App Setup
-Open the project in Android Studio
-
-Sync Gradle dependencies
-
-Update API base URL in ApiClient.java:
-
-java
-private static final String BASE_URL = "http://10.0.2.2/expense_api/";
-Build and run the application
-
-Configuration
-Backend Configuration (config.php)
-php
-$db_host = 'localhost';
-$db_user = 'root';      // Default XAMPP username
-$db_pass = '';          // Default XAMPP password
-$db_name = 'expense_tracker';
-Android Configuration
-Update server IP for real device testing
-
-Configure location permissions
-
-Set minimum SDK version (API 23)
-
-📁 Project Structure
-text
-PersonalExpenseTracker/
-├── app/
-│   ├── src/main/java/com/example/personalexpensetracker/
-│   │   ├── activities/          # Android Activities
-│   │   ├── fragments/           # Android Fragments
-│   │   ├── adapters/            # RecyclerView Adapters
-│   │   ├── api/                 # API Client & Services
-│   │   ├── auth/                # Authentication Helper
-│   │   ├── database/            # Room Database
-│   │   ├── models/              # Data Models
-│   │   └── viewmodels/          # ViewModels
-│   └── src/main/res/
-│       ├── layout/              # XML Layouts
-│       ├── drawable/            # Icons & Images
-│       ├── values/              # Strings, Colors, Styles
-│       └── menu/                # Menu Resources
-├── php_api/
-│   ├── config.php               # Database Configuration
-│   ├── auth.php                 # Authentication API
-│   └── expenses.php             # Expenses CRUD API
-└── database/
-    └── schema.sql              # Database Schema
-🛠️ Technologies Used
-Frontend (Android)
-Java - Primary programming language
-
-Android SDK - Native Android development
-
-Material Design - UI components and theming
-
-Room Database - Local data persistence
-
-Retrofit - HTTP client for API calls
-
-MPAndroidChart - Chart and graph library
-
-Google Maps API - Location services
-
-Backend
-PHP - Server-side scripting
-
-MySQL - Database management
-
-XAMPP - Local development server
-
-REST API - JSON-based API endpoints
-
-📊 Database Schema
-Users Table
 sql
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    password VARCHAR(255) NOT NULL
 );
-Expenses Table
-sql
+
 CREATE TABLE expenses (
     id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     category VARCHAR(100) NOT NULL,
-    date DATETIME NOT NULL,
-    location VARCHAR(255),
-    latitude DECIMAL(10,8),
-    longitude DECIMAL(11,8),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    date DATETIME NOT NULL
 );
-🔌 API Endpoints
-Authentication
-POST /auth.php - User registration/login
+3. PHP API Setup
+Go to: C:\xampp\htdocs\
 
-Request Body:
+Create folder: expense_api
 
-json
-{
-  "action": "register|login",
-  "email": "user@example.com",
-  "password": "password123"
+Add these 3 files inside:
+
+config.php
+
+auth.php
+
+expenses.php
+
+config.php:
+
+php
+<?php
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE");
+
+$db_host = 'localhost';
+$db_user = 'root';
+$db_pass = '';
+$db_name = 'expense_tracker';
+
+try {
+    $conn = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    exit();
 }
-Expenses
-GET /expenses.php?user_id={id} - Get all expenses
+?>
+auth.php:
 
-POST /expenses.php - Add new expense
+php
+<?php
+require_once 'config.php';
 
-PUT /expenses.php - Update expense
+$data = json_decode(file_get_contents("php://input"));
+$response = ["success" => false, "message" => "Invalid request"];
 
-DELETE /expenses.php - Delete expense
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($data->action === 'register') {
+        $hashedPassword = password_hash($data->password, PASSWORD_BCRYPT);
+        $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+        
+        if ($stmt->execute([$data->email, $hashedPassword])) {
+            $response = ["success" => true, "message" => "Registered", "user_id" => $conn->lastInsertId()];
+        }
+    }
+    elseif ($data->action === 'login') {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$data->email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($user && password_verify($data->password, $user['password'])) {
+            $response = ["success" => true, "message" => "Login successful", "user_id" => $user['id']];
+        }
+    }
+}
 
-📱 Usage
-Adding an Expense
-Navigate to "Add Expense" tab
+echo json_encode($response);
+?>
+4. Android App Setup
+Open project in Android Studio
 
-Enter expense details (title, amount, category)
+Update app/build.gradle:
 
-Select date and time
+gradle
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    
+    // Room Database
+    implementation "androidx.room:room-runtime:2.5.2"
+    annotationProcessor "androidx.room:room-compiler:2.5.2"
+    
+    // Retrofit for API calls
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+}
+Update API URL in ApiClient.java:
 
-Add location (optional)
+java
+private static final String BASE_URL = "http://10.0.2.2/expense_api/"; // For emulator
+5. Run the App
+Start XAMPP services
 
-Save expense
+Build and run in Android Studio
 
-Viewing Expenses
-View all expenses in list format
+Use emulator or real device
 
-Filter by category or date
+📱 App Features
+✅ User registration/login
 
-See total spending per category
+✅ Add/View expenses
 
-Analytics
-Pie chart showing expense distribution
+✅ Expense categories
 
-Monthly spending trends
+✅ Date tracking
 
-Category-wise analysis
+✅ Local database
 
-🔧 Development
-Building the Project
-bash
-# Clean project
-./gradlew clean
+🔧 Troubleshooting
+White Screen on Launch
+Check if XAMPP is running
 
-# Build project
-./gradlew build
+Verify PHP files are in correct location
 
-# Run tests
-./gradlew test
-Adding New Features
-Create feature branch
+Test API in browser: http://localhost/expense_api/auth.php
 
-Implement changes
+Database Connection Error
+Check XAMPP MySQL is running
 
-Update database schema if needed
+Verify database credentials
 
-Test thoroughly
+Test connection in phpMyAdmin
 
-Create pull request
+App Not Connecting to Server
+Emulator: Use http://10.0.2.2/
+Real Device: Use your computer's IP address
 
-Code Style
-Follow Java naming conventions
-
-Use meaningful variable names
-
-Add comments for complex logic
-
-Maintain consistent indentation
-
-🧪 Testing
-Unit Tests
-Run Android unit tests with ./gradlew test
-
-Test individual components in isolation
-
-API Testing
-Use Postman to test API endpoints
-
-Test all CRUD operations
-
-Verify error handling
-
-UI Testing
-Test on multiple screen sizes
-
-Verify dark/light mode switching
-
-Test location permissions
+📂 File Structure
+text
+PersonalExpenseTracker/
+├── app/src/main/java/
+│   ├── activities/     # Screens (Login, Main, Register)
+│   ├── api/           # API calls
+│   ├── auth/          # Authentication
+│   └── models/        # Data models
+├── htdocs/expense_api/
+│   ├── config.php
+│   ├── auth.php
+│   └── expenses.php
